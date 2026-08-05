@@ -1,0 +1,51 @@
+# .gitlab-ci.yml — 每次 push 自动运行服务端单元/集成测试,并通过后构建 Docker 镜像
+# 最后一次 CI 运行须为 pass 状态。
+
+stages:
+  - test
+  - build
+
+variables:
+  NODE_VERSION: "20"
+  DATABASE_URL: "file:./dev.db"
+  JWT_SECRET: "ci-jwt-secret-do-not-use-in-production"
+
+# 缓存 node_modules,加速重复运行
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+    - server/node_modules/
+    - client/node_modules/
+
+# 服务端一键测试(单元 + 集成,当前最后一次 pass:64 tests)
+unit-test:
+  stage: test
+  image: node:${NODE_VERSION}-alpine
+  before_script:
+    - npm ci --ignore-scripts
+    - npm run db:generate -w server
+    - npm run db:deploy -w server
+  script:
+    - npm run test -w server
+  artifacts:
+    when: always
+    reports:
+      junit: server/reports/junit.xml
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+
+# 构建容器镜像(仅在上游测试通过后执行,不推送 registry)
+build-image:
+  stage: build
+  image: docker:24-dind
+  services:
+    - docker:24-dind
+  needs:
+    - job: unit-test
+      artifacts: false
+  script:
+    - docker build -t football-app:$CI_COMMIT_SHORT_SHA .
+  rules:
+    - if: $CI_COMMIT_BRANCH

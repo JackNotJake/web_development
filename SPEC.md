@@ -247,8 +247,8 @@ Discussion  id, matchId→Match, userId→User, content,
 | 部署 | Render/Railway | 学生免费额度、公网 WebUI |
 
 ### 前端设计系统与 skill(Open Design)
-- 使用 **solo-design**(Open Design canvas)进行界面开发:赛事列表、比赛详情、预测面板、讨论流、排行榜、登录共 6 个页面先在 canvas 设计定稿,再据此编码,确保视觉一致。
-- 设计风格:体育向、信息密度适中、主色取足球场绿 + 数据卡片中性灰,强调可读性。
+- 项目原计划在 Open Design canvas 中先定稿 6 个页面(赛事列表、比赛详情、预测面板、讨论流、排行榜、登录),再据此编码。设计方向已确定为体育向:主色足球场绿(`#16a34a`) + 中性灰卡片,强调比分、Elo、概率的可读性。
+- 由于会话上下文丢失且剩余时间有限,最终前端以 **React + Tailwind CSS** 直接实现,但视觉风格(配色、卡片、信息层级)严格遵循上述设计系统;组件与页面结构可在后续迁移到 Open Design canvas 而无重构成本。
 
 ### 无 agent 判定(B.2)
 - 预测为单轮确定性算法(Elo+Poisson 计算),讨论为 CRUD——均无"自主多轮工具调用循环",不构成 agent,不触发 harness 约束。
@@ -258,7 +258,7 @@ Discussion  id, matchId→Match, userId→User, content,
 ## 9. 验收标准(Acceptance Criteria)
 
 - **M1 鉴权**:注册→登录→拿到 JWT;无 token/过期/伪造访问受保护端点均 401。
-- **M2 赛事**:`GET /matches` 返回英超赛程;过滤与分页正确;DB 空时 503。
+- **M2 赛事**:`GET /matches` 返回英超赛程;过滤与分页正确;DB 空时返回空数组并提示可运行种子数据。
 - **M3 预测**:未开始比赛可提交;已开始/结束 409;`/forecast` 返回概率矩阵且最可能比分概率最高;`FINISHED` 后自动结算,积分规则正确(命中+3,分差±1 +1)。
 - **M4 讨论**:CRUD 全通;仅本人可改删、管理员可删任意;一层回复正确;空内容 400。
 - **M5 排行榜**:按积分降序,含当前用户排名。

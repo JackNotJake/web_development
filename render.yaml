@@ -1,0 +1,28 @@
+# render.yaml — Render.com 一键部署 Blueprint
+# 用法:
+#   1. 在 Render Dashboard 创建 Blueprint,选择本 Git 仓库。
+#   2. 在部署配置中填入 FOOTBALL_DATA_TOKEN(从 football-data.org 获取)。
+#   3. Render 会自动构建 Dockerfile 并启动服务。
+# 注意:免费实例有休眠限制,长时间不访问会进入睡眠。
+
+services:
+  - type: web
+    name: football-app
+    runtime: docker
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: '3000'
+      - key: DATABASE_URL
+        value: 'file:./prisma/dev.db'
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FOOTBALL_DATA_TOKEN
+        sync: false
+    disk:
+      name: sqlite-data
+      mountPath: /app/server/prisma
+      sizeGB: 1
+    healthCheckPath: /health

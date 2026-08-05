@@ -1,0 +1,25 @@
+# docker-compose.yml — 本地/单机一键运行
+# 用法:
+#   cp .env.example .env
+#   # 编辑 .env 填入 JWT_SECRET 与 FOOTBALL_DATA_TOKEN
+#   docker compose up --build
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: football-app
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=file:./prisma/dev.db
+    volumes:
+      - db-data:/app/server/prisma
+    restart: unless-stopped
+
+volumes:
+  db-data:

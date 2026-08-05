@@ -25,3 +25,19 @@ export function authMiddleware(req, res, next) {
     return res.status(401).json({ error: '无效或过期的认证令牌' });
   }
 }
+
+/**
+ * 软鉴权中间件:有合法 Bearer token 则挂载 req.user,无 token 或非法 token
+ * 不拦截(交由控制器对写操作兜底 401)。用于浏览类公开接口同时识别已登录用户。
+ */
+export function optionalAuth(req, res, next) {
+  const header = req.headers.authorization;
+  if (header && header.startsWith('Bearer ')) {
+    try {
+      req.user = jwt.verify(header.slice('Bearer '.length).trim(), getJwtSecret());
+    } catch {
+      // 非法 token:不报错,留给控制器按需处理
+    }
+  }
+  return next();
+}
