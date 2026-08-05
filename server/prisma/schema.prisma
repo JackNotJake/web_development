@@ -17,7 +17,7 @@ model User {
   username     String   @unique
   eloScore     Int      @default(1500)
   totalPoints  Int      @default(0)
-  role         Role     @default(USER)
+  role         String   @default("USER")
   createdAt    DateTime @default(now())
   predictions   Prediction[]
   discussions  Discussion[]
@@ -35,17 +35,6 @@ model Team {
   awayMatches     Match[]  @relation("AwayTeam")
 
   @@map("teams")
-}
-
-enum MatchStatus {
-  SCHEDULED
-  TIMED
-  IN_PLAY
-  PAUSED
-  FINISHED
-  SUSPENDED
-  POSTPONED
-  CANCELLED
 }
 
 model Match {
@@ -104,7 +93,4 @@ model Discussion {
   @@map("discussions")
 }
 
-enum Role {
-  USER
-  ADMIN
-}
+
