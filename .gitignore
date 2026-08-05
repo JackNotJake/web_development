@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+client/dist/
+
+# Env & secrets (never commit)
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# Database
+*.db
+*.db-journal
+dev.db
+prisma/dev.db
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Trae design canvas (large binary, keep out of git)
+.design/
+
+# Trae internal
+.trae/

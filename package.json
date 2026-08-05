@@ -1,0 +1,23 @@
+{
+  "name": "football-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "足球赛事浏览·比分预测·赛后讨论 全栈 Web 应用",
+  "workspaces": ["server", "client"],
+  "scripts": {
+    "test": "npm test --workspaces --if-present",
+    "dev": "concurrently -n server,client -c blue,green \"npm run dev -w server\" \"npm run dev -w client\"",
+    "dev:server": "npm run dev -w server",
+    "dev:client": "npm run dev -w client",
+    "build": "npm run build -w server && npm run build -w client",
+    "key:set": "node server/src/cli/keys.js set",
+    "key:status": "node server/src/cli/keys.js status",
+    "key:clear": "node server/src/cli/keys.js clear"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
