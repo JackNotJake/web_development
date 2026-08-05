@@ -63,6 +63,44 @@
 - 结算:比赛 `FINISHED` 后由 cron/事件触发,按规则计分(命中+3,分差±1 +1),更新 Prediction.points 与 User.totalPoints/eloScore。
 - 错误:未登录 401;非本人预测访问 403。
 
+### M3.1 预测算法精确契约(冷启动验证修订)
+> 经冷启动验证(不同 agent 仅凭 SPEC+PLAN 试实现)修订,补全原缺失的参数与维度定义。
+
+**参数(全部定值,消除区间歧义)**
+- K 因子 = 32(固定;SPEC 原"20-40"区间无选择规则,已废弃)。
+- 初始 Elo = 1500。
+- 基准总进球 `baseGoals` = 2.6(联赛);欧冠 2.8(按 competition 校准)。
+- 主场优势 `homeAdv` = 0.20。
+- Elo 调整系数 `eloDivisor` = 200。
+
+**Elo → λ 映射(原严重缺失,现补全)**
+```
+expectedGoalDiff = (homeElo - awayElo) / eloDivisor        // 主队视角的期望进球差
+λ_home = (baseGoals/2 + expectedGoalDiff/2) × (1 + homeAdv)
+λ_away = (baseGoals/2 - expectedGoalDiff/2) × (1 - homeAdv/2)
+// 钳制:λ ∈ [0.1, 6.0],避免负值与高 λ 截断失真
+```
+约束:`λ_home + λ_away ≈ baseGoals × (1 + homeAdv/2)`(总量近似守恒)。
+
+**比分概率矩阵**(11×11,主 0-10 × 客 0-10)
+- `P_algo(h,a) = poissonPmf(h, λ_home) × poissonPmf(a, λ_away)`,主客独立假设(已知局限,见 R1)。
+- λ=0 时 `poissonPmf(0,0)=1, poissonPmf(k>0,0)=0`(冷启动边界修复)。
+- 高 λ(>4)尾部截断使矩阵和 <1,接口返回 `matrixSum` 供前端标注,不强行归一化。
+- `mostLikelyScore` = 矩阵中概率最大的 `[h,a]`;等概率 tie-break 取较小 h、再较小 a。
+
+**融合维度 = 胜平负 3 档(原 121 vs 11 维歧义,现统一为 3)**
+- 算法侧 3 档:`P_algo_3 = [P(homeWin)=Σ_{h>a}, P(draw)=Σ_{h==a}, P(awayWin)=Σ_{h<a}]`。
+- 社区侧 3 档:每条用户预测 (homeScore,awayScore) 映射到胜/平/负,计数后归一;无投票时 Dirichlet 平滑 α=1(即 `[1/3,1/3,1/3]`)。
+- 融合:`P_final_3[i] = w·P_algo_3[i] + (1−w)·P_community_3[i]`,维度一致(3)。
+- 权重函数:`w = max(0.5, 0.7 − 0.02×min(votes,10))`;votes=0 时 w=0.7(纯算法),votes≥10 时 w=0.5。
+- 接口 `GET /matches/:id/prediction-final` 返回 `{ algo3, community3, final3, mostLikely, w, votes }`;`mostLikely` 仍取自算法矩阵(融合只调整 3 档置信,不改具体比分)。
+
+**结算规则(钉死歧义)**
+- 完全命中实际比分 → +3。
+- 每队预测进球与实际之差均 ≤1(但不完全命中)→ +1。例:实际(2,0)、预测(1,1)→ |2-1|≤1 且 |0-1|≤1 → +1。
+- 其他 → 0。
+- 比分差(margin)解读已废弃,采用"每队各 ±1"解读(更直观、与用户直觉一致)。
+
 ### M4 赛后讨论模块(Discussion)
 - 输入:POST `{ matchId, content, parentId? }`;GET 按 matchId 分页 `page/limit`;PATCH/DELETE 按 id。
 - 行为:扁平 + 一层回复(parentId 指向根评论);本人可改删,管理员可删任意。

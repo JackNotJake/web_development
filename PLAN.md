@@ -217,46 +217,73 @@ export function mostLikelyScore(matrix) {
 
 ---
 
-### Task 5: 预测融合服务(算法+社区融合)
+### Task 5: 预测融合服务(算法+社区融合,3 档)
 
 **Files:** Create `server/src/services/predictionService.js`, Test `server/tests/unit/predictionService.test.js`
 
-- [ ] **Step 1: 写失败测试**(融合权重、Dirichlet 平滑、最可能比分):
+> 注:经冷启动验证修订——融合维度统一为**胜平负 3 档**(原 121 vs 11 维歧义已消除),补全 Elo→λ 映射与 w 函数。精确契约见 SPEC §M3.1。
+
+- [ ] **Step 1: 写失败测试**(融合 3 档、Elo→λ、w 函数、Dirichlet 平滑):
 ```javascript
 import { describe, it, expect } from 'vitest';
-import { fuseDistributions, communityDistribution, computeLambdas, forecast } from '../../src/services/predictionService.js';
+import { computeLambdas, toThreeWay, communityDistribution, fuseDistributions, weightFunction, forecast } from '../../src/services/predictionService.js';
 
 describe('predictionService', () => {
   it('computeLambdas: 主队Elo高则λ主>λ客', () => {
-    const [lh, la] = computeLambdas(1600, 1400, 2.6, 0.2);
-    expect(lh).toBeGreaterThan(la);
+    const { lambdaHome, lambdaAway } = computeLambdas(1600, 1400, 2.6, 0.2, 200);
+    expect(lambdaHome).toBeGreaterThan(lambdaAway);
+    expect(lambdaHome + lambdaAway).toBeCloseTo(2.6 * 1.1, 1); // 总量近似守恒
   });
-  it('communityDistribution: 空投票经Dirichlet平滑后非零且和≈1', () => {
-    const dist = communityDistribution([], 11);
-    expect(dist.length).toBe(11);
-    const sum = dist.reduce((a,b)=>a+b,0);
-    expect(sum).toBeCloseTo(1, 3);
+  it('computeLambdas: 钳制 λ∈[0.1,6.0]', () => {
+    const r = computeLambdas(3000, 500, 2.6, 0.2, 200);
+    expect(r.lambdaHome).toBeLessThanOrEqual(6.0);
+    expect(r.lambdaAway).toBeGreaterThanOrEqual(0.1);
+  });
+  it('toThreeWay: 矩阵折叠为胜平负3档且和=1', () => {
+    const m = Array.from({length:11},()=>Array(11).fill(1/121));
+    const t = toThreeWay(m);
+    expect(t).toHaveLength(3);
+    const sum = t.reduce((a,b)=>a+b,0);
+    expect(sum).toBeCloseTo(1, 2);
+  });
+  it('communityDistribution: 空投票Dirichlet→[1/3,1/3,1/3]', () => {
+    const d = communityDistribution([]);
+    expect(d).toHaveLength(3);
+    expect(d[0]).toBeCloseTo(1/3, 3);
+  });
+  it('communityDistribution: 投票计数归一', () => {
+    // 2 票主胜(2,1)(3,0) + 1 票平(1,1)
+    const d = communityDistribution([{homeScore:2,awayScore:1},{homeScore:3,awayScore:0},{homeScore:1,awayScore:1}]);
+    expect(d[0]).toBeCloseTo(2/3, 3); // home win
+    expect(d[1]).toBeCloseTo(1/3, 3); // draw
+    expect(d[2]).toBeCloseTo(0, 3);
+  });
+  it('weightFunction: votes=0→0.7, votes≥10→0.5', () => {
+    expect(weightFunction(0)).toBeCloseTo(0.7, 3);
+    expect(weightFunction(10)).toBeCloseTo(0.5, 3);
+    expect(weightFunction(20)).toBeCloseTo(0.5, 3);
   });
   it('fuseDistributions: w=1 时等于算法分布', () => {
-    const algo = Array(11).fill(0).map((_,i)=>i===0?0.5:0.05);
-    const comm = Array(11).fill(1/11);
+    const algo = [0.5, 0.3, 0.2];
+    const comm = [1/3, 1/3, 1/3];
     const f = fuseDistributions(algo, comm, 1.0);
     expect(f[0]).toBeCloseTo(0.5, 6);
   });
-  it('forecast: 返回最可能比分与概率', () => {
-    const r = forecast({ homeElo:1600, awayElo:1400, baseGoals:2.6, homeAdv:0.2, votes:[] });
+  it('forecast: 返回3档+最可能比分+矩阵', () => {
+    const r = forecast({ homeElo:1600, awayElo:1400, baseGoals:2.6, homeAdv:0.2, eloDivisor:200, votes:[] });
+    expect(r.final3).toHaveLength(3);
     expect(r.mostLikely).toHaveLength(2);
-    expect(r.probability).toBeGreaterThan(0);
     expect(r.matrix.length).toBe(11);
+    expect(r.w).toBeCloseTo(0.7, 3);
   });
 });
 ```
 - [ ] **Step 2: 跑确认红**.
-- [ ] **Step 3: 实现**:含 `computeLambdas`(主客调整)、`communityDistribution`(Dirichlet α=1 平滑到 11x11 矩阵展平或简化为胜平负三档)、`fuseDistributions(w·algo+(1-w)·comm)`、`forecast`(组装 Elo→λ→矩阵→融合→mostLikely;w 随 votes 数从 0.7 下调到 0.5).
+- [ ] **Step 3: 实现**(按 SPEC §M3.1 契约):`computeLambdas(homeElo,awayElo,baseGoals,homeAdv,eloDivisor)` 返回 `{lambdaHome,lambdaAway}` 钳制 [0.1,6.0];`toThreeWay(matrix)=[Σh>a, Σh==a, Σh<a]`;`communityDistribution(votes)`(空→[1/3,1/3,1/3]);`weightFunction(votes)=max(0.5, 0.7-0.02*min(votes,10))`;`fuseDistributions(algo3,comm3,w)`;`forecast({homeElo,awayElo,baseGoals,homeAdv,eloDivisor,votes})` 组装(scoreMatrix→toThreeWay→fuse→mostLikely,返回 `{algo3,community3,final3,mostLikely,w,votes,matrix,matrixSum}`).
 - [ ] **Step 4: 跑确认绿**.
-- [ ] **Step 5: Commit** `feat: prediction fusion service`.
+- [ ] **Step 5: Commit** `feat: prediction fusion service (3-way)`.
 
-**验证**:4 测试绿。
+**验证**:8 测试绿。
 
 依赖:T3, T4.
 
