@@ -20,7 +20,7 @@ RUN npm run build -w client
 
 # ==================== 阶段 2:运行环境 ====================
 FROM node:20-slim
-WORKDIR /app/server
+WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 
@@ -29,17 +29,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libsecret-1-0 \
     && rm -rf /var/lib/apt/lists/*
 
+# npm workspaces 将依赖提升到根目录 /app/node_modules
+COPY --from=builder /app/node_modules ./node_modules
+
 # 复制服务端运行所需文件
-COPY --from=builder /app/server/package*.json ./
-COPY --from=builder /app/server/node_modules ./node_modules
-COPY --from=builder /app/server/prisma ./prisma
-COPY --from=builder /app/server/src ./src
+COPY --from=builder /app/server/package*.json ./server/
+COPY --from=builder /app/server/prisma ./server/prisma
+COPY --from=builder /app/server/src ./server/src
 
 # 复制前端构建产物,由 Express 静态托管 + SPA fallback
 # app.js 以 /app/server/src/app.js 为基准解析 ../../client/dist => /app/client/dist
-COPY --from=builder /app/client/dist ../client/dist
+COPY --from=builder /app/client/dist ./client/dist
 
 EXPOSE 3000
 
 # 容器启动时自动应用数据库迁移,再启动服务
-CMD ["sh", "-c", "npx prisma migrate deploy && node src/index.js"]
+CMD ["sh", "-c", "cd /app/server && npx prisma migrate deploy && node src/index.js"]
