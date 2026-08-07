@@ -41,12 +41,12 @@ export function createApp() {
   });
 
   // —— API 路由 ——
-  app.use('/auth', authRoutes);
-  app.use('/matches', matchRoutes);
+  app.use('/api/auth', authRoutes);
+  app.use('/api/matches', matchRoutes);
   // 以下路由自带完整路径前缀(/matches/:matchId/predictions、/discussions/:id、/leaderboard)
-  app.use('/', predictionRoutes);
-  app.use('/', discussionRoutes);
-  app.use('/', leaderboardRoutes);
+  app.use('/api', predictionRoutes);
+  app.use('/api', discussionRoutes);
+  app.use('/api', leaderboardRoutes);
 
   // —— 静态资源 + SPA 回退(生产) ——
   app.use(express.static(clientDist));

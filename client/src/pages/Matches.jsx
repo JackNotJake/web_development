@@ -12,7 +12,7 @@ export default function Matches() {
     async function load() {
       try {
         const { data } = await api.get('/matches', { params: { status: filter, limit: 50 } });
-        setMatches(data.matches);
+        setMatches(data?.matches || []);
       } catch (err) {
         setError(err.message);
       } finally {
