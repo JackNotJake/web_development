@@ -7,7 +7,8 @@ export default function Leaderboard() {
 
   useEffect(() => {
     api.get('/leaderboard', { params: { scope: 'all' } })
-      .then(({ data }) => setRows(data.leaderboard))
+      .then(({ data }) => setRows(data?.leaderboard || []))
+      .catch(() => setRows([]))
       .finally(() => setLoading(false));
   }, []);
 

@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useAuthStore } from './store';
 import { connectSocket, disconnectSocket } from './socket';
 import Layout from './components/Layout';
+import ErrorBoundary from './components/ErrorBoundary';
 import Matches from './pages/Matches';
 import MatchDetail from './pages/MatchDetail';
 import Leaderboard from './pages/Leaderboard';
@@ -30,14 +31,16 @@ function App() {
 
   return (
     <Layout>
-      <Routes>
-        <Route path="/" element={<Navigate to="/matches" replace />} />
-        <Route path="/matches" element={<Matches />} />
-        <Route path="/matches/:id" element={<MatchDetail />} />
-        <Route path="/leaderboard" element={<Leaderboard />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/" element={<Navigate to="/matches" replace />} />
+          <Route path="/matches" element={<Matches />} />
+          <Route path="/matches/:id" element={<MatchDetail />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </ErrorBoundary>
     </Layout>
   );
 }

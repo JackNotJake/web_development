@@ -35,9 +35,9 @@ export default function MatchDetail() {
         api.get(`/matches/${id}/prediction-final`),
         api.get(`/matches/${id}/discussions`, { params: { limit: 100 } }),
       ]);
-      setMatch(m);
-      setForecast(f);
-      setDiscussions(d.discussions || []);
+      setMatch(typeof m === 'object' && m !== null ? m : null);
+      setForecast(typeof f === 'object' && f !== null ? f : null);
+      setDiscussions(typeof d === 'object' && d !== null ? (d.discussions || []) : []);
     } catch (err) {
       setError(err.message);
     } finally {
