@@ -43,5 +43,5 @@ COPY --from=builder /app/client/dist ./client/dist
 
 EXPOSE 3000
 
-# 容器启动时自动应用数据库迁移,再启动服务
-CMD ["sh", "-c", "cd /app/server && npx prisma migrate deploy && node src/index.js"]
+# 容器启动时自动应用数据库迁移,需要时写入种子数据,再启动服务
+CMD ["sh", "-c", "cd /app/server && npx prisma migrate deploy && npm run db:seed && node src/index.js"]

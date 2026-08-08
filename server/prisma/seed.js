@@ -95,6 +95,12 @@ const faqs = [
 ];
 
 async function main() {
+  const existingTeams = await prisma.team.count();
+  if (existingTeams > 0) {
+    console.log('[seed] 数据库已有数据，跳过种子写入。');
+    return;
+  }
+
   console.log('[seed] 清空旧数据...');
   await prisma.prediction.deleteMany();
   await prisma.discussion.deleteMany();
