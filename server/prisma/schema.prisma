@@ -28,9 +28,12 @@ model User {
 model Team {
   id              String   @id @default(cuid())
   name            String
+  alias           String?
   footballDataId  Int      @unique
   eloRating       Int      @default(1500)
   crestUrl        String?
+  color           String   @default("#16a34a")
+  secondaryColor  String   @default("#15803d")
   homeMatches     Match[]  @relation("HomeTeam")
   awayMatches     Match[]  @relation("AwayTeam")
 
@@ -48,6 +51,7 @@ model Match {
   awayTeamId      String
   homeScore       Int?
   awayScore       Int?
+  venue           String?
   homeTeam        Team         @relation("HomeTeam", fields: [homeTeamId], references: [id])
   awayTeam        Team         @relation("AwayTeam", fields: [awayTeamId], references: [id])
   predictions     Prediction[]
@@ -59,6 +63,15 @@ model Match {
   @@index([competition])
   @@index([utcDate])
   @@map("matches")
+}
+
+model Faq {
+  id       String @id @default(cuid())
+  question String
+  answer   String
+  order    Int    @default(0)
+
+  @@map("faqs")
 }
 
 model Prediction {

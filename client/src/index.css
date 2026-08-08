@@ -1,10 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   body {
-    @apply antialiased;
+    @apply antialiased bg-pitch-950 text-slate-100;
+    font-family: 'Noto Sans SC', system-ui, sans-serif;
   }
 }
 
@@ -16,12 +19,30 @@
     @apply btn bg-brand-600 text-white hover:bg-brand-700 focus:ring-brand-500;
   }
   .btn-secondary {
-    @apply btn bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 focus:ring-slate-300;
+    @apply btn bg-pitch-800 text-slate-200 border border-pitch-700 hover:bg-pitch-700 focus:ring-brand-500;
+  }
+  .btn-ghost {
+    @apply btn text-slate-300 hover:text-white hover:bg-white/5 focus:ring-brand-500;
   }
   .card {
-    @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+    @apply rounded-xl border border-pitch-700 bg-pitch-900 shadow-sm;
   }
   .input {
-    @apply w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none;
+    @apply w-full rounded-lg border border-pitch-700 bg-pitch-800 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none;
+  }
+  .table-dark {
+    @apply w-full text-left text-sm;
+  }
+  .table-dark th {
+    @apply border-b border-pitch-700 bg-pitch-800/50 px-4 py-3 font-medium text-slate-400;
+  }
+  .table-dark td {
+    @apply border-b border-pitch-800 px-4 py-3 text-slate-300;
+  }
+  .table-dark tbody tr:hover {
+    @apply bg-pitch-800/40;
+  }
+  .badge {
+    @apply inline-flex items-center rounded px-2 py-0.5 text-xs font-medium;
   }
 }

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Football Forecast - 前端样式预览</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              900: '#14532d',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+    .preview-frame { box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+  <!-- Header -->
+  <header class="sticky top-0 z-10 border-b border-slate-200 bg-white/80 backdrop-blur">
+    <div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
+      <a href="#" class="flex items-center gap-2 font-bold text-brand-700">
+        <svg class="h-6 w-6" viewBox="0 0 100 100" fill="none">
+          <circle cx="50" cy="50" r="48" fill="#16a34a" />
+          <path d="M50 20 L55 45 L80 50 L55 55 L50 80 L45 55 L20 50 L45 45 Z" fill="white" />
+        </svg>
+        <span>Football Forecast</span>
+      </a>
+      <nav class="flex items-center gap-4 text-sm">
+        <a href="#matches" class="text-slate-600 hover:text-brand-700">赛事</a>
+        <a href="#leaderboard" class="text-slate-600 hover:text-brand-700">排行榜</a>
+        <a href="#login" class="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-700">登录</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-5xl px-4 py-8">
+    <!-- Intro -->
+    <section class="mb-12 text-center">
+      <h1 class="mb-3 text-3xl font-bold text-slate-800">Football Forecast 前端样式预览</h1>
+      <p class="mx-auto max-w-2xl text-slate-500">基于当前代码实现整理的预期界面：赛事浏览、比分预测、赛后讨论。整体采用清爽的绿色品牌色 + Slate 中性色，卡片式布局。</p>
+    </section>
+
+    <!-- Design Tokens -->
+    <section class="mb-12">
+      <h2 class="mb-4 text-xl font-bold text-slate-800">设计 Token</h2>
+      <div class="grid gap-4 sm:grid-cols-3">
+        <div class="rounded-xl border border-slate-200 bg-white p-4">
+          <h3 class="mb-3 text-sm font-semibold text-slate-700">品牌色</h3>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2"><div class="h-8 w-8 rounded bg-brand-600"></div><span class="text-xs text-slate-500">brand-600 #16a34a</span></div>
+            <div class="flex items-center gap-2"><div class="h-8 w-8 rounded bg-brand-100"></div><span class="text-xs text-slate-500">brand-100 #dcfce7</span></div>
+          </div>
+        </div>
+        <div class="rounded-xl border border-slate-200 bg-white p-4">
+          <h3 class="mb-3 text-sm font-semibold text-slate-700">中性色</h3>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2"><div class="h-8 w-8 rounded bg-slate-800"></div><span class="text-xs text-slate-500">slate-800 标题/正文</span></div>
+            <div class="flex items-center gap-2"><div class="h-8 w-8 rounded border border-slate-200 bg-white"></div><span class="text-xs text-slate-500">slate-200 边框/分割</span></div>
+          </div>
+        </div>
+        <div class="rounded-xl border border-slate-200 bg-white p-4">
+          <h3 class="mb-3 text-sm font-semibold text-slate-700">组件样式</h3>
+          <div class="space-y-2">
+            <button class="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-700">btn-primary</button>
+            <button class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">btn-secondary</button>
+            <div class="rounded-xl border border-slate-200 bg-white p-2 text-xs text-slate-500">card</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Matches Page -->
+    <section id="matches" class="mb-12">
+      <h2 class="mb-4 text-xl font-bold text-slate-800">1. 赛事列表页 /matches</h2>
+      <div class="preview-frame overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+        <div class="border-b border-slate-200 bg-white px-6 py-4">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h3 class="text-2xl font-bold text-slate-800">赛事列表</h3>
+            <div class="flex gap-2">
+              <button class="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white">未开始</button>
+              <button class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-50">已结束</button>
+              <button class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-50">全部</button>
+            </div>
+          </div>
+        </div>
+        <div class="p-6">
+          <div class="grid gap-4 sm:grid-cols-2">
+            <!-- Match Card 1 -->
+            <a href="#" class="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+              <div class="mb-2 flex items-center justify-between text-xs text-slate-500">
+                <span>PL · 第 18 轮</span>
+                <span class="rounded bg-slate-100 px-2 py-0.5 text-slate-700">未开始</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex-1 text-center">
+                  <div class="text-lg font-semibold text-slate-800">Manchester City</div>
+                  <div class="text-xs text-slate-500">Elo 1850</div>
+                </div>
+                <div class="px-4 text-2xl font-bold text-brand-700">vs</div>
+                <div class="flex-1 text-center">
+                  <div class="text-lg font-semibold text-slate-800">Liverpool</div>
+                  <div class="text-xs text-slate-500">Elo 1820</div>
+                </div>
+              </div>
+              <div class="mt-2 text-center text-xs text-slate-400">1月20日 00:30</div>
+            </a>
+            <!-- Match Card 2 -->
+            <a href="#" class="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+              <div class="mb-2 flex items-center justify-between text-xs text-slate-500">
+                <span>PL · 第 18 轮</span>
+                <span class="rounded bg-brand-100 px-2 py-0.5 text-brand-700">已结束</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex-1 text-center">
+                  <div class="text-lg font-semibold text-slate-800">Arsenal</div>
+                  <div class="text-xs text-slate-500">Elo 1790</div>
+                </div>
+                <div class="px-4 text-2xl font-bold text-brand-700">2 : 1</div>
+                <div class="flex-1 text-center">
+                  <div class="text-lg font-semibold text-slate-800">Chelsea</div>
+                  <div class="text-xs text-slate-500">Elo 1720</div>
+                </div>
+              </div>
+              <div class="mt-2 text-center text-xs text-slate-400">1月15日 23:00</div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Match Detail Page -->
+    <section id="detail" class="mb-12">
+      <h2 class="mb-4 text-xl font-bold text-slate-800">2. 赛事详情页 /matches/:id</h2>
+      <div class="preview-frame overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+        <div class="space-y-6 p-6">
+          <!-- Match Header -->
+          <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <a href="#" class="text-sm text-slate-500 hover:text-brand-700">← 返回赛事列表</a>
+            <div class="mb-4 mt-2 flex items-center justify-between text-sm text-slate-500">
+              <span>PL · 第 18 轮</span>
+              <span class="rounded bg-slate-100 px-2 py-0.5 text-slate-700">未开始</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex-1 text-center">
+                <div class="text-2xl font-bold text-slate-800">Manchester City</div>
+                <div class="text-sm text-slate-500">Elo 1850</div>
+              </div>
+              <div class="px-6 text-4xl font-black text-brand-700">vs</div>
+              <div class="flex-1 text-center">
+                <div class="text-2xl font-bold text-slate-800">Liverpool</div>
+                <div class="text-sm text-slate-500">Elo 1820</div>
+              </div>
+            </div>
+            <div class="mt-4 text-center text-sm text-slate-400">开赛时间 2026-01-20 00:30</div>
+          </div>
+
+          <!-- Prediction -->
+          <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 class="mb-4 text-lg font-bold text-slate-800">智能预测</h3>
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <div class="mb-2 text-sm text-slate-500">最可能比分</div>
+                <div class="text-3xl font-bold text-brand-700">2 : 1</div>
+                <div class="mt-1 text-xs text-slate-400">基于 Elo + Poisson 模型</div>
+              </div>
+              <div>
+                <div class="mb-2 text-sm text-slate-500">胜/平/负概率</div>
+                <div class="space-y-2">
+                  <div><div class="mb-1 flex justify-between text-xs text-slate-600"><span>主胜 52.3%</span></div><div class="h-2 w-full rounded-full bg-slate-100"><div class="h-2 rounded-full bg-brand-600" style="width:52.3%"></div></div></div>
+                  <div><div class="mb-1 flex justify-between text-xs text-slate-600"><span>平局 24.1%</span></div><div class="h-2 w-full rounded-full bg-slate-100"><div class="h-2 rounded-full bg-amber-400" style="width:24.1%"></div></div></div>
+                  <div><div class="mb-1 flex justify-between text-xs text-slate-600"><span>客胜 23.6%</span></div><div class="h-2 w-full rounded-full bg-slate-100"><div class="h-2 rounded-full bg-blue-500" style="width:23.6%"></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Prediction -->
+          <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 class="mb-4 text-lg font-bold text-slate-800">提交你的预测</h3>
+            <form class="flex flex-wrap items-end gap-3">
+              <div><label class="mb-1 block text-xs font-medium text-slate-600">主队</label><input type="number" min="0" value="2" class="w-20 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none" /></div>
+              <div class="pb-2 text-slate-400">:</div>
+              <div><label class="mb-1 block text-xs font-medium text-slate-600">客队</label><input type="number" min="0" value="1" class="w-20 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none" /></div>
+              <button type="submit" class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700">提交预测</button>
+            </form>
+          </div>
+
+          <!-- Discussion -->
+          <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 class="mb-4 text-lg font-bold text-slate-800">赛后讨论</h3>
+            <div class="mb-6">
+              <textarea class="mb-2 min-h-[80px] w-full resize-y rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none" placeholder="参与讨论..."></textarea>
+              <button class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700">发表评论</button>
+            </div>
+            <div class="space-y-4">
+              <div class="border-b border-slate-100 pb-4">
+                <div class="mb-1 flex items-center gap-2 text-sm"><span class="font-semibold text-slate-700">Jack</span><span class="text-xs text-slate-400">2026-01-15 23:30</span></div>
+                <p class="text-slate-700">这场曼城主场应该能小胜，预测 2:1。</p>
+                <button class="mt-2 text-xs text-brand-700 hover:underline">回复</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Leaderboard -->
+    <section id="leaderboard" class="mb-12">
+      <h2 class="mb-4 text-xl font-bold text-slate-800">3. 排行榜页 /leaderboard</h2>
+      <div class="preview-frame overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+        <div class="border-b border-slate-200 bg-white px-6 py-4">
+          <h3 class="text-2xl font-bold text-slate-800">预测排行榜</h3>
+        </div>
+        <div class="p-6">
+          <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-slate-600">
+                <tr><th class="px-4 py-3 font-medium">排名</th><th class="px-4 py-3 font-medium">用户</th><th class="px-4 py-3 font-medium">积分</th><th class="px-4 py-3 font-medium">Elo</th></tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr class="hover:bg-slate-50"><td class="px-4 py-3 font-semibold text-slate-700">1</td><td class="px-4 py-3 text-slate-800">Alice</td><td class="px-4 py-3 font-medium text-brand-700">128</td><td class="px-4 py-3 text-slate-500">1680</td></tr>
+                <tr class="hover:bg-slate-50"><td class="px-4 py-3 font-semibold text-slate-700">2</td><td class="px-4 py-3 text-slate-800">Bob</td><td class="px-4 py-3 font-medium text-brand-700">115</td><td class="px-4 py-3 text-slate-500">1620</td></tr>
+                <tr class="hover:bg-slate-50"><td class="px-4 py-3 font-semibold text-slate-700">3</td><td class="px-4 py-3 text-slate-800">Charlie</td><td class="px-4 py-3 font-medium text-brand-700">102</td><td class="px-4 py-3 text-slate-500">1590</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Auth -->
+    <section id="login" class="mb-12">
+      <h2 class="mb-4 text-xl font-bold text-slate-800">4. 登录 / 注册</h2>
+      <div class="preview-frame grid gap-6 sm:grid-cols-2">
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h3 class="mb-1 text-2xl font-bold text-slate-800">欢迎回来</h3>
+          <p class="mb-6 text-sm text-slate-500">登录后参与预测与讨论</p>
+          <form class="space-y-4">
+            <div><label class="mb-1 block text-sm font-medium text-slate-700">邮箱</label><input type="email" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none" /></div>
+            <div><label class="mb-1 block text-sm font-medium text-slate-700">密码</label><input type="password" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none" /></div>
+            <button type="submit" class="w-full rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700">登录</button>
+          </form>
+        </div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h3 class="mb-1 text-2xl font-bold text-slate-800">注册账号</h3>
+          <p class="mb-6 text-sm text-slate-500">创建账号开启预测之旅</p>
+          <form class="space-y-4">
+            <div><label class="mb-1 block text-sm font-medium text-slate-700">邮箱</label><input type="email" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none" /></div>
+            <div><label class="mb-1 block text-sm font-medium text-slate-700">用户名</label><input type="text" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none" /></div>
+            <div><label class="mb-1 block text-sm font-medium text-slate-700">密码</label><input type="password" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none" /></div>
+            <button type="submit" class="w-full rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700">注册</button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-500">
+    AI4SE Final Project · 足球赛事浏览·比分预测·赛后讨论
+  </footer>
+</body>
+</html>

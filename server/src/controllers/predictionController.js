@@ -44,10 +44,29 @@ export async function create(req, res) {
   const prediction = await prisma.prediction.upsert({
     where: { userId_matchId: { userId, matchId } },
     create: { userId, matchId, homeScore, awayScore },
-    update: { homeScore, awayScore },
+    update: { homeScore, awayScore, createdAt: new Date() },
   });
 
   return res.status(201).json({ prediction });
+}
+
+/**
+ * GET /matches/:id/my-prediction(鉴权)
+ * 返回当前登录用户对该场比赛的最新预测；未预测则 prediction 为 null。
+ */
+export async function getMyPrediction(req, res) {
+  if (!req.user) {
+    return res.status(401).json({ error: '未提供认证令牌' });
+  }
+
+  const { id } = req.params;
+  const { userId } = req.user;
+
+  const prediction = await prisma.prediction.findUnique({
+    where: { userId_matchId: { userId, matchId: id } },
+  });
+
+  return res.status(200).json({ prediction });
 }
 
 /**
