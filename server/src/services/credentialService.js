@@ -3,7 +3,15 @@
 // 绝不硬编码 / 提交 Git / 写日志或终端 history / 明文配置。
 // .env 仅开发来源(明文风险),生产用平台 secret 注入到运行时进程。
 
-import keytar from 'keytar';
+// keytar 是原生模块，在 Docker 等无编译环境可能不可用。
+// 使用动态导入 + try/catch，加载失败时所有操作静默回退（返回 null/false）。
+let keytar = null;
+try {
+  const mod = await import('keytar');
+  keytar = mod.default;
+} catch (e) {
+  console.warn('[credentialService] keytar 原生模块不可用，已回退到环境变量模式:', e.message);
+}
 
 /**
  * keytar 服务名 —— OS 钥匙串中区分本应用的命名空间。
@@ -20,6 +28,7 @@ export const SERVICE_NAME = 'football-app';
  * @returns {Promise<boolean>} keytar.setPassword 结果
  */
 export async function setCredential(name, value) {
+  if (!keytar) return false;
   return keytar.setPassword(SERVICE_NAME, name, value);
 }
 
@@ -29,6 +38,7 @@ export async function setCredential(name, value) {
  * @returns {Promise<string|null>} 凭据值;未设置返回 null
  */
 export async function getCredential(name) {
+  if (!keytar) return null;
   return keytar.getPassword(SERVICE_NAME, name);
 }
 
@@ -47,6 +57,7 @@ export async function hasCredential(name) {
  * @returns {Promise<boolean>} 是否曾存在并被删除(keytar.deletePassword 语义)
  */
 export async function clearCredential(name) {
+  if (!keytar) return false;
   return keytar.deletePassword(SERVICE_NAME, name);
 }
 
