@@ -45,6 +45,9 @@ COPY --from=builder /app/server/src ./server/src
 # app.js 以 /app/server/src/app.js 为基准解析 ../../client/dist => /app/client/dist
 COPY --from=builder /app/client/dist ./client/dist
 
+# 创建持久化数据目录（Docker 卷挂载点）
+RUN mkdir -p /app/data
+
 EXPOSE 3000
 
 # 容器启动时自动应用数据库迁移,需要时写入种子数据,再启动服务

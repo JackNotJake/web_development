@@ -16,9 +16,9 @@ services:
     env_file:
       - .env
     environment:
-      - DATABASE_URL=file:./prisma/dev.db
+      - DATABASE_URL=file:/app/data/dev.db
     volumes:
-      - db-data:/app/server/prisma
+      - db-data:/app/data
     restart: unless-stopped
 
 volumes:
