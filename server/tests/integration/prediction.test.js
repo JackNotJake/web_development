@@ -8,16 +8,11 @@ import jwt from 'jsonwebtoken';
 
 const app = express();
 app.use(express.json());
-app.use((req, res, next) => {
-  const auth = req.headers.authorization;
-  if (auth?.startsWith('Bearer ')) { try { req.user = jwt.verify(auth.slice(7), 'test-secret'); } catch { return res.status(401).json({ error: 'invalid' }); } }
-  next();
-});
 app.use('/', predictionRoutes);
 app.use('/', leaderboardRoutes);
 
 let userId, matchId, finishedMatchId, homeId, awayId;
-const token = (uid, role = 'USER') => jwt.sign({ userId: uid, role }, 'test-secret');
+const token = (uid, role = 'USER') => jwt.sign({ userId: uid, role }, process.env.JWT_SECRET || 'test-secret');
 
 beforeAll(async () => {
   const u = await prisma.user.create({ data: { email: 'pred@example.com', passwordHash: 'x', username: 'preduser', totalPoints: 100, role: 'USER' } });

@@ -3,19 +3,10 @@ import request from 'supertest';
 import express from 'express';
 import { prisma } from '../../src/prismaClient.js';
 import discussionRoutes from '../../src/routes/discussion.routes.js';
-import { authMiddleware } from '../../src/middleware/auth.js';
 import jwt from 'jsonwebtoken';
 
 const app = express();
 app.use(express.json());
-// 模拟鉴权:用测试 token 解出 userId
-app.use((req, res, next) => {
-  const auth = req.headers.authorization;
-  if (auth && auth.startsWith('Bearer ')) {
-    try { req.user = jwt.verify(auth.slice(7), 'test-secret'); } catch { return res.status(401).json({ error: 'invalid token' }); }
-  }
-  next();
-});
 app.use('/', discussionRoutes);
 
 let userId, otherUserId, matchId, rootDiscussionId;
@@ -37,7 +28,7 @@ afterAll(async () => {
   await prisma.$disconnect();
 });
 
-const token = (uid, role = 'USER') => jwt.sign({ userId: uid, role }, 'test-secret');
+const token = (uid, role = 'USER') => jwt.sign({ userId: uid, role }, process.env.JWT_SECRET || 'test-secret');
 
 describe('discussion routes', () => {
   it('创建评论 201', async () => {
