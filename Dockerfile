@@ -24,9 +24,13 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# 安装运行 keytar 需要的系统库;若钥匙串不可用,应用会回退到环境变量
+# 安装运行时系统库：
+# - libsecret-1-0：keytar 需要（钥匙串不可用时回退到环境变量）
+# - openssl / libssl3：Prisma 查询引擎依赖，缺少会报 Schema engine error
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libsecret-1-0 \
+    openssl \
+    libssl3 \
     && rm -rf /var/lib/apt/lists/*
 
 # npm workspaces 将依赖提升到根目录 /app/node_modules
